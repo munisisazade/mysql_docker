@@ -23,9 +23,9 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 SECRET_KEY = 'cbz+ld_r!0p8tp*bmc3k^4ih38x9%8@z#20sw3k843zc_@@=9+'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
-
-ALLOWED_HOSTS = []
+DEBUG = not os.environ.get("DEBUG", False)
+PROD = not DEBUG
+ALLOWED_HOSTS = ["*"]
 
 
 # Application definition
@@ -72,13 +72,28 @@ WSGI_APPLICATION = 'mysite.wsgi.application'
 
 # Database
 # https://docs.djangoproject.com/en/3.0/ref/settings/#databases
-
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+if not PROD:
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.mysql',
+            'NAME': 'homestead',
+            'USER': 'root',
+            'PASSWORD': 'secret',
+            'HOST': '127.0.0.1',   # Or an IP Address that your DB is hosted on
+            'PORT': '3306',
+        }
     }
-}
+else:
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.mysql',
+            'NAME': os.getenv("MYSQL_DATABASE"),
+            'USER':  os.getenv("MYSQL_USER"),
+            'PASSWORD': os.getenv("MYSQL_PASSWORD"),
+            'HOST': os.getenv("MYSQL_HOST"),  # Or an IP Address that your DB is hosted on
+            'PORT': os.getenv("MYSQL_PORT"),
+        }
+    }
 
 
 # Password validation
@@ -118,3 +133,12 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/3.0/howto/static-files/
 
 STATIC_URL = '/static/'
+if PROD:
+    STATIC_ROOT = os.path.join(BASE_DIR, "static")
+else:
+    STATICFILES_DIRS = [
+        os.path.join(BASE_DIR, "static")
+    ]
+
+MEDIA_URL = '/media/'
+MEDIA_ROOT = os.path.join(BASE_DIR, "media")

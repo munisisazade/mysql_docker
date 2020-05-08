@@ -10,3 +10,23 @@ services:
       - "3306:3306"
     volumes:
       - ./dbdata:/var/lib/mysql
+
+  web:
+    container_name: django_app
+    build: .
+    restart: "always"
+    env_file: .env
+    environment:
+      - VIRTUAL_HOST=test.mpy.az
+      - VIRTUAL_PORT=8060
+      - TIMEOUT=300
+      - HTTP_PORT=8061
+      - STATS_PORT=8060
+    volumes:
+      - .:/code
+    ports:
+      - "8060:8060"
+    links:
+      - mysql
+    depends_on:
+      - "mysql"

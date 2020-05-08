@@ -2,6 +2,7 @@
 .idea/
 .venv
 dbdata/
+*.pyc
 ### Actionscript template
 # Build and Release Folders
 bin-debug/
